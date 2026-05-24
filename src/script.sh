@@ -3,16 +3,20 @@
 clear
 echo "🚀 Criador de API Fastify com Docker, Prisma 7 (Driver Nativo), PostgreSQL, ESLint 9 e Prettier"
 
-read -p "📦 Digite o nome do projeto: " project_name
-project_name="${project_name//_/-}"
+read -p "📦 Digite o nome do projeto (ou '.' para usar o diretório atual): " project_name
 
-if [[ ! "$project_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
-  echo "❌ Nome do projeto inválido. Use apenas letras, números, hífens ou underscores."
-  exit 1
+if [[ "$project_name" == "." ]]; then
+  project_name=$(basename "$PWD")
+  echo "📂 Usando o diretório atual: $project_name"
+else
+  project_name="${project_name//_/-}"
+  if [[ ! "$project_name" =~ ^[a-zA-Z0-9_-]+$ ]]; then
+    echo "❌ Nome do projeto inválido. Use apenas letras, números, hífens ou underscores."
+    exit 1
+  fi
+  mkdir "$project_name"
+  cd "$project_name" || exit 1
 fi
-
-mkdir "$project_name"
-cd "$project_name" || exit 1
 
 echo -e "\n🧱 Inicializando projeto Node.js com TypeScript e Fastify 🔥🚀..."
 
@@ -45,7 +49,7 @@ EOF
 
 # Dependências de produção
 pnpm add fastify @fastify/cors @fastify/helmet @fastify/swagger @fastify/swagger-ui @fastify/jwt \
-  @prisma/client dotenv zod fastify-type-provider-zod \
+  @fastify/rate-limit @prisma/client dotenv zod fastify-type-provider-zod \
   pg @prisma/adapter-pg \
   bcrypt dayjs
 
